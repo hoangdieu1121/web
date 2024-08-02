@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tìm kiếm nâng cao</title>
+  <style>
+    /* Thêm CSS của bạn ở đây */
+    .search-bar { margin: 20px; }
+    .advanced-filters { margin: 20px; }
+    .filter { margin-bottom: 15px; }
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+  </style>
+</head>
+<body>
+  <div class="search-bar">
+    <input type="text" placeholder="Tìm kiếm công việc..." />
+    <button type="submit">Tìm kiếm</button>
+  </div>
+  
+  <div class="advanced-filters">
+    <!-- Vị trí -->
+    <div class="filter">
+      <label for="location">Vị trí:</label>
+      <select id="location" multiple>
+        <option value="tphcm">TP HCM</option>
+        <option value="hanoi">Hà Nội</option>
+        <option value="danang">Đà Nẵng</option>
+        <!-- Thêm các thành phố khác -->
+      </select>
+    </div>
+    
+    <!-- Kỹ năng -->
+    <div class="filter">
+      <label for="skills">Kỹ năng:</label>
+      <input type="text" id="skills" placeholder="Nhập kỹ năng..." />
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="guide"> Hướng dẫn viên</label>
+        <label><input type="checkbox" value="manager"> Quản lý khách sạn</label>
+        <!-- Thêm các kỹ năng khác -->
+      </div>
+    </div>
+    
+    <!-- Kinh nghiệm -->
+    <div class="filter">
+      <label for="experience">Kinh nghiệm:</label>
+      <input type="range" id="experience" min="0" max="10" step="1" value="0">
+      <span id="experience-value">0 năm</span>
+    </div>
+    
+    <!-- Ngôn ngữ -->
+    <div class="filter">
+      <label for="languages">Ngôn ngữ:</label>
+      <input type="text" id="languages" placeholder="Nhập ngôn ngữ..." />
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="english"> Tiếng Anh</label>
+        <label><input type="checkbox" value="french"> Tiếng Pháp</label>
+        <!-- Thêm các ngôn ngữ khác -->
+      </div>
+    </div>
+    
+    <button type="submit">Áp dụng</button>
+  </div>
+
+  <script>
+    document.getElementById('experience').addEventListener('input', function() {
+      document.getElementById('experience-value').textContent = this.value + ' năm';
+    });
+
+    document.querySelector('.advanced-filters button[type="submit"]').addEventListener('click', function() {
+      let filters = {
+        location: Array.from(document.getElementById('location').selectedOptions).map(option => option.value),
+        skills: Array.from(document.querySelectorAll('#skills + .checkbox-group input:checked')).map(input => input.value),
+        experience: document.getElementById('experience').value,
+        languages: Array.from(document.querySelectorAll('#languages + .checkbox-group input:checked')).map(input => input.value),
+      };
+      console.log(filters);
+      // Thực hiện yêu cầu AJAX đến API backend
+      fetch('/api/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filters),
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+    });
+  </script>
+</body>
+</html>
